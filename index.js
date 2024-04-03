@@ -24,6 +24,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
+app.use("/api/v1/restaurant", require("./routes/restaurant.route"));
+app.use("/api/v1/auth", require("./routes/user.route"));
+
 if (process.env.NOD_ENV === "development") {
     app.use(morgan("dev"));
 }

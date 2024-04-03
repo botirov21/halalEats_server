@@ -8,6 +8,13 @@ exports.createNewRestaurant = asyncHandler(async (req, res, next) => {
     const newRestaurant = await Restaurant.create({
         name: req.body.name,
         location: req.body.location,
+        contactNumber: req.body.contactNumber,
+        restaurantImage: req.body.restaurantImage,
+        menuImage: req.body.menuImage,
+        hallImage: req.body.hallImage,
+        prayerRoom: req.body.prayerRoom,
+        workingDays: req.body.workingDays,
+
     });
     res.status(200).json({
         success: true,
