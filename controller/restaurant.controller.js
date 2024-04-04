@@ -1,8 +1,9 @@
 const asyncHandler = require("../middleware/async");
 const Restaurant = require("../models/restaurant");
+const Menu = require("../models/menu");
 
 // @desc    Create data
-// @route   PUT /api/createRestaurant
+// @route   PUT /api/addRestaurant
 // @access  Public
 exports.createNewRestaurant = asyncHandler(async (req, res, next) => {
     const newRestaurant = await Restaurant.create({
@@ -86,3 +87,21 @@ exports.deleteRestaurant = asyncHandler(async (req, res) => {
     await Restaurant.findByIdAndDelete(req.params.id);
     res.status(200).json("Data deleted succesfully");
 })
+
+exports.addMenu = asyncHandler(async (req, res) => {
+    try {
+        const { restaurantId } = req.params;
+        const { name, price, image } = req.body;
+
+        const menu = await Menu.create({ restaurantId, name, price, image });
+
+        const restaurant = await Restaurant.findByIdAndUpdate(restaurantId, { $push: { menu: menu._id } }, { new: true });
+
+        res.status(201).json({ message: 'Menu added successfully', menu, restaurant });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+

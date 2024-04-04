@@ -30,7 +30,7 @@ exports.login = async (req, res, next) => {
     }
 }
 
-
+    
 
 exports.logout = (req, res, next) => {
     res.clearCookie('token');
