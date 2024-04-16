@@ -1,29 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
-const menuSchema = new mongoose.Schema({
-  restaurantId: {
-    type: Schema.Types.ObjectId,
-    ref: "Restaurant",
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  }
-},
-{
-    timestamps: true,
-}
-);
+const ObjectId = Schema.Types.ObjectId;
+const Menu = require('./menu');
 
 const restaurantSchema = new mongoose.Schema(
   { 
@@ -53,15 +31,30 @@ const restaurantSchema = new mongoose.Schema(
         type: String,
       },
     ],
-    prayerRoom: {
-      type: Boolean,
-      default: true,
-    },
     workingDays: {
       type: String,
       required: true,
     },
-    menu: [menuSchema], 
+    menu: [Menu.schema],
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User', // Referencing the User model
+      },
+    ],
+    comments: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'User', // Referencing the User model
+        },
+        comment: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

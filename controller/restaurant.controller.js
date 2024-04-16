@@ -11,9 +11,8 @@ exports.createNewRestaurant = asyncHandler(async (req, res, next) => {
         location: req.body.location,
         contactNumber: req.body.contactNumber,
         restaurantImage: req.body.restaurantImage,
-        menuImage: req.body.menuImage,
         hallImage: req.body.hallImage,
-        prayerRoom: req.body.prayerRoom,
+        city: req.body.city,
         workingDays: req.body.workingDays,
 
     });
@@ -93,9 +92,20 @@ exports.addMenu = asyncHandler(async (req, res) => {
         const { restaurantId } = req.params;
         const { name, price, image } = req.body;
 
+        // Create the menu item
         const menu = await Menu.create({ restaurantId, name, price, image });
 
-        const restaurant = await Restaurant.findByIdAndUpdate(restaurantId, { $push: { menu: menu._id } }, { new: true });
+        // Find the restaurant by ID and push the menu item's data into the menu array
+        const restaurant = await Restaurant.findByIdAndUpdate(restaurantId, {
+            $push: { 
+                menu: { 
+                    _id: menu._id,
+                    name: menu.name,
+                    price: menu.price,
+                    image: menu.image
+                } 
+            } 
+        }, { new: true });
 
         res.status(201).json({ message: 'Menu added successfully', menu, restaurant });
     } catch (err) {
@@ -103,5 +113,93 @@ exports.addMenu = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Like a restaurant
+// @route   PUT /api/restaurants/:id/like
+// @access  Public
+exports.likeRestaurant = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const restaurant = await Restaurant.findById(id);
+    if (!restaurant) {
+        return res.status(404).json({ success: false, error: "Restaurant not found" });
+    }
+
+    if (restaurant.likes.includes(userId)) {
+        return res.status(400).json({ success: false, error: "You have already liked this restaurant" });
+    }
+
+    restaurant.likes.push(userId);
+    await restaurant.save();
+
+    res.status(200).json({ success: true, message: "Restaurant liked successfully" });
+});
+
+// @desc    Unlike a restaurant
+// @route   PUT /api/restaurants/:id/unlike
+// @access  Public
+exports.unlikeRestaurant = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const restaurant = await Restaurant.findById(id);
+    if (!restaurant) {
+        return res.status(404).json({ success: false, error: "Restaurant not found" });
+    }
+
+    if (!restaurant.likes.includes(userId)) {
+        return res.status(400).json({ success: false, error: "You have not liked this restaurant" });
+    }
+
+    restaurant.likes = restaurant.likes.filter(like => like !== userId);
+    await restaurant.save();
+
+    res.status(200).json({ success: true, message: "Restaurant unliked successfully" });
+});
+
+// @desc    Comment on a restaurant
+// @route   PUT /api/restaurants/:id/comment
+// @access  Public
+exports.commentRestaurant = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { comment } = req.body;
+    const userId = req.user.id;
+
+    const restaurant = await Restaurant.findById(id);
+    if (!restaurant) {
+        return res.status(404).json({ success: false, error: "Restaurant not found" });
+    }
+
+    restaurant.comments.push({ user: userId, comment });
+    await restaurant.save();
+
+    res.status(200).json({ success: true, message: "Comment added successfully" });
+});
+
+// @desc    Uncomment a restaurant comment
+// @route   PUT /api/restaurants/:id/uncomment/:commentId
+// @access  Public
+exports.uncommentRestaurant = asyncHandler(async (req, res) => {
+    const { id, commentId } = req.params;
+
+    const userId = req.user.id;
+    const restaurant = await Restaurant.findById(id);
+
+    if (!restaurant) {
+        return res.status(404).json({ success: false, error: "Restaurant not found" });
+    }
+
+    const commentIndex = restaurant.comments.findIndex(comment => comment._id == commentId);
+    if (commentIndex === -1) {
+        return res.status(404).json({ success: false, error: "Comment not found" });
+    }
+
+    if (restaurant.comments[commentIndex].user.toString() !== userId) {
+        return res.status(403).json({ success: false, error: "You are not authorized to delete this comment" });
+    }
+
+    restaurant.comments.splice(commentIndex, 1);
+    await restaurant.save();
+
+    res.status(200).json({ success: true, message: "Comment removed successfully" });
+});
 
 
