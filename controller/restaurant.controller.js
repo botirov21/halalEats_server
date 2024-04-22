@@ -23,7 +23,7 @@ exports.createNewRestaurant = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get all data
-// @route   GET /api/restaurants
+// @route   GET /api/allRestaurants
 // @access  Public
 exports.getAllRestaurants = asyncHandler(async (req, res, next) => {
     const pageLimit = process.env.DEFAULT_PAGE_LIMIT || 10;
@@ -55,7 +55,7 @@ exports.getRestaurantById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update data by id
-// @route   GET /api/restaurants/:id
+// @route   GET /api/:id
 // @access  Public
 exports.updateRestaurant = asyncHandler(async (req, res) => {
     const restaurantId = await Restaurant.findById(req.params.id)
@@ -80,7 +80,7 @@ exports.updateRestaurant = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete data by id
-// @route   GET /api/restaurants/:id
+// @route   GET /api/:id
 // @access  Public
 exports.deleteRestaurant = asyncHandler(async (req, res) => {
     await Restaurant.findByIdAndDelete(req.params.id);
@@ -114,7 +114,7 @@ exports.addMenu = asyncHandler(async (req, res) => {
 });
 
 // @desc    Like a restaurant
-// @route   PUT /api/restaurants/:id/like
+// @route   PUT /api/:id/like
 // @access  Public
 exports.likeRestaurant = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -135,7 +135,7 @@ exports.likeRestaurant = asyncHandler(async (req, res) => {
 });
 
 // @desc    Unlike a restaurant
-// @route   PUT /api/restaurants/:id/unlike
+// @route   PUT /api/:id/unlike
 // @access  Public
 exports.unlikeRestaurant = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -156,7 +156,7 @@ exports.unlikeRestaurant = asyncHandler(async (req, res) => {
 });
 
 // @desc    Comment on a restaurant
-// @route   PUT /api/restaurants/:id/comment
+// @route   PUT /api/:id/comment
 // @access  Public
 exports.commentRestaurant = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -175,7 +175,7 @@ exports.commentRestaurant = asyncHandler(async (req, res) => {
 });
 
 // @desc    Uncomment a restaurant comment
-// @route   PUT /api/restaurants/:id/uncomment/:commentId
+// @route   PUT /api/:id/uncomment/:commentId
 // @access  Public
 exports.uncommentRestaurant = asyncHandler(async (req, res) => {
     const { id, commentId } = req.params;

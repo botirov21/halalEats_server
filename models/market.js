@@ -11,7 +11,7 @@ const marketSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        number: {
+        contactNumber: {
             type: String,
             required: true,
         },

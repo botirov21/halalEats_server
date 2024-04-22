@@ -13,3 +13,4 @@ const mosqueSchema = new mongoose.Schema(
         
     }
 )
+module.exports = mongoose.model("Mosque", mosqueSchema )
