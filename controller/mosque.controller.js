@@ -1,22 +1,19 @@
 const asyncHandler = require("../middleware/async");
-const Mosque = require("../models/market");
+const Mosque = require("../models/mosque");
 
-// @desc    Create data
-// @route   PUT /api/addMarket
+// @desc    Create a new mosque
+// @route   POST /api/mosques
 // @access  Public
 exports.createNewMosque = asyncHandler(async (req, res, next) => {
-    const newMosque = await Mosque.create({
-        name: req.body.name,
-        location: req.body.location,
-    });
+    const newMosque = await Mosque.create(req.body);
     res.status(200).json({
         success: true,
         data: newMosque,
     });
 });
 
-// @desc    Get all data
-// @route   GET /api/AllMarkets
+// @desc    Get all mosques
+// @route   GET /api/mosques
 // @access  Public
 exports.getAllMosques = asyncHandler(async (req, res, next) => {
     const pageLimit = process.env.DEFAULT_PAGE_LIMIT || 10;
@@ -25,7 +22,7 @@ exports.getAllMosques = asyncHandler(async (req, res, next) => {
     const page = parseInt(req.query.page || 1);
     const total = await Mosque.countDocuments();
   
-    const mosque = await Mosque.find()
+    const mosques = await Mosque.find()
       .skip(page * limit - limit)
       .limit(limit);
     res.status(200).json({
@@ -33,63 +30,76 @@ exports.getAllMosques = asyncHandler(async (req, res, next) => {
         pageCount: Math.ceil(total / limit),
         currentPage: page,
         next: Math.ceil(total / limit) < page + 1 ? null : page + 1,
-        data: mosque,    
+        data: mosques,    
     });
 });
 
-// @desc    Get data by id
-// @route   GET /api/:id
+// @desc    Get mosque by ID
+// @route   GET /api/mosques/:id
 // @access  Public
 exports.getMosqueById = asyncHandler(async (req, res, next) => {
     const mosqueId = req.params.id;
-    const data = await Mosque.findById(mosqueId);
-
-    res.status(200).json(data);
-});
-
-// @desc    Update data by id
-// @route   GET /api/:id
-// @access  Public
-exports.updateMosque = asyncHandler(async (req, res) => {
-    const mosqueId = await Mosque.findById(req.params.id)
-    if(!mosqueId){
+    const mosque = await Mosque.findById(mosqueId);
+    if (!mosque) {
         return res.status(404).json({
             success: false,
-            error: "not found"
-        })
+            error: "Mosque not found"
+        });
     }
-    const updatedData = {
-        name: req.body.name,
-        location: req.body.location,
-    };
-    const updatedMosque = await Mosque.findByIdAndUpdate(req.params.id, updatedData, {
-        new: true,
-        runValidators: true,
-      });
     res.status(200).json({
-        success: true, 
-        data: updatedMosque,
+        success: true,
+        data: mosque
     });
 });
 
-// @desc    Delete data by id
-// @route   GET /api/:id
+// @desc    Update mosque by ID
+// @route   PUT /api/mosques/:id
+// @access  Public
+exports.updateMosque = asyncHandler(async (req, res) => {
+    const mosqueId = req.params.id;
+    const updatedMosque = await Mosque.findByIdAndUpdate(mosqueId, req.body, {
+        new: true,
+        runValidators: true,
+    });
+    if (!updatedMosque) {
+        return res.status(404).json({
+            success: false,
+            error: "Mosque not found"
+        });
+    }
+    res.status(200).json({
+        success: true,
+        data: updatedMosque
+    });
+});
+
+// @desc    Delete mosque by ID
+// @route   DELETE /api/mosques/:id
 // @access  Public
 exports.deleteMosque = asyncHandler(async (req, res) => {
-    await Mosque.findByIdAndDelete(req.params.id);
-    res.status(200).json("Data deleted succesfully");
-})
+    const mosqueId = req.params.id;
+    const deletedMosque = await Mosque.findByIdAndDelete(mosqueId);
+    if (!deletedMosque) {
+        return res.status(404).json({
+            success: false,
+            error: "Mosque not found"
+        });
+    }
+    res.status(200).json({
+        success: true,
+        message: "Mosque deleted successfully"
+    });
+});
 
-
-// @desc    Like a market
-// @route   PUT /api/restaurants/:id/like
+// @desc    Like a mosque
+// @route   PUT /api/mosques/:id/like
 // @access  Public
 exports.likeMosque = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const mosque = await Mosque.findById(id);
     if (!mosque) {
-        return res.status(404).json({ success: false, error: "mosque not found" });
+        return res.status(404).json({ success: false, error: "Mosque not found" });
     }
 
     if (mosque.likes.includes(userId)) {
@@ -99,8 +109,5 @@ exports.likeMosque = asyncHandler(async (req, res) => {
     mosque.likes.push(userId);
     await mosque.save();
 
-    res.status(200).json({ success: true, message: "mosque liked Market" });
+    res.status(200).json({ success: true, message: "Mosque liked" });
 });
-
-
-

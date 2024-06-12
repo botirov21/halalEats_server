@@ -18,7 +18,7 @@ const router = Router();
 router.post("/addMarket", createNewMarket);
 router.get("/allRestaurants", getAllMarkets);
 router.get("/:id", getMarketById);
-router.put("/:id", updateMarket);
+router.put("/:id", updateMarket); 
 router.delete("/:id", deleteMarket);
 
 // New routes for liking and unliking a market
