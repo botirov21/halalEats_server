@@ -2,22 +2,43 @@ const mongoose = require("mongoose");
 
 const marketSchema = new mongoose.Schema(
     {
-        name:{
+        name: {
             type: String,
             required: true,
-            unique: true,
         },
         location: {
             type: String,
             required: true,
         },
-        contactNumber: {
+        info: {
             type: String,
             required: true,
         },
-        marketImage: {
+        latitude: {
             type: String,
-            required: true
+            required: true,
+        },
+        longitude: {
+            type: String,
+            required: true,
+        },
+        isMetropolitan: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        province: {
+            type: String,
+            required: function () { return !this.isMetropolitan; },
+        },
+        city: {
+            type: String,
+            required: function () { return !this.isMetropolitan; },
+        },
+        metropolitanCity: {
+            type: String,
+            required: function () { return this.isMetropolitan; },
+            enum: ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju'],
         },
         workingDays:{
             type: String,

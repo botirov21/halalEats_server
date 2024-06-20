@@ -16,7 +16,7 @@ const router = Router();
 
 // Market routes
 router.post("/addMarket", createNewMarket);
-router.get("/allRestaurants", getAllMarkets);
+router.get("/allMarkets", getAllMarkets);
 router.get("/:id", getMarketById);
 router.put("/:id", updateMarket); 
 router.delete("/:id", deleteMarket);

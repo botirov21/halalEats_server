@@ -5,14 +5,7 @@ const Market = require("../models/market");
 // @route   PUT /api/addMarket
 // @access  Public
 exports.createNewMarket = asyncHandler(async (req, res, next) => {
-    const newMarket = await Market.create({
-        name: req.body.name,
-        location: req.body.location,
-        contactNumber: req.body.contactNumber,
-        marketImage: req.body.marketImage,
-        workingDays: req.body.workingDays,
-
-    });
+    const newMarket = await Market.create(req.body);
     res.status(200).json({
         success: true,
         data: newMarket,
@@ -27,7 +20,7 @@ exports.getAllMarkets = asyncHandler(async (req, res, next) => {
 
     const limit = parseInt(req.query.limit || pageLimit);
     const page = parseInt(req.query.page || 1);
-    const total = await Restaurant.countDocuments();
+    const total = await Market.countDocuments();
   
     const market = await Market.find()
       .skip(page * limit - limit)
