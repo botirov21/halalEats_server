@@ -6,16 +6,7 @@ const Menu = require("../models/menu");
 // @route   PUT /api/addRestaurant
 // @access  Public
 exports.createNewRestaurant = asyncHandler(async (req, res, next) => {
-    const newRestaurant = await Restaurant.create({
-        name: req.body.name,
-        location: req.body.location,
-        contactNumber: req.body.contactNumber,
-        restaurantImage: req.body.restaurantImage,
-        hallImage: req.body.hallImage,
-        city: req.body.city,
-        workingDays: req.body.workingDays,
-
-    });
+    const newRestaurant = await Restaurant.create(req.body);
     res.status(200).json({
         success: true,
         data: newRestaurant,
@@ -65,11 +56,7 @@ exports.updateRestaurant = asyncHandler(async (req, res) => {
             error: "not found"
         })
     }
-    const updatedData = {
-        name: req.body.name,
-        location: req.body.location,
-    };
-    const updatedRestaurant = await Restaurant.findByIdAndUpdate(req.params.id, updatedData, {
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(req.params.id,  req.body,{
         new: true,
         runValidators: true,
       });
@@ -78,6 +65,7 @@ exports.updateRestaurant = asyncHandler(async (req, res) => {
         data: updatedRestaurant,
     });
 });
+
 
 // @desc    Delete data by id
 // @route   GET /api/:id
